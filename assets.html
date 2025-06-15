@@ -59,11 +59,12 @@
   <div class="d-flex">
     <!-- Sidebar -->
     <div class="sidebar">
-      <h4 class="text-center mb-4">Fireside Capital</h4>
+      <h4 class="text-center mb-4">🔥Fireside Capital</h4>
       <a href="index.html"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
       <a href="assets.html" class="active"><i class="bi bi-house-door me-2"></i> Assets</a>
       <a href="investments.html"><i class="bi bi-piggy-bank me-2"></i> Investments</a>
       <a href="debts.html"><i class="bi bi-credit-card me-2"></i> Debts</a>
+      <a href="bills.html"><i class="bi bi-receipt me-2"></i> Bills</a>
       <a href="reports.html"><i class="bi bi-graph-up-arrow me-2"></i> Reports</a>
       <a href="#"><i class="bi bi-gear me-2"></i> Settings</a>
     </div>
@@ -87,12 +88,12 @@
                 <th>Current Value</th>
                 <th>Loan Balance</th>
                 <th>Equity</th>
-                <th>Next Due</th> <!-- ← new -->
+                <th>Next Due</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody id="assetTableBody">
-              <!-- Populated via JS -->
+              <!-- Populated by JS -->
             </tbody>
           </table>
         </div>
@@ -100,7 +101,7 @@
     </main>
   </div>
 
-  <!-- Add Asset Modal -->
+  <!-- Asset Modal -->
   <div class="modal fade" id="addAssetModal" tabindex="-1" aria-labelledby="addAssetModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -113,7 +114,7 @@
           <div class="modal-body row g-3">
             <div class="col-md-6">
               <label for="assetName" class="form-label">Asset Name</label>
-              <input type="text" class="form-control" id="assetName" required>
+              <input type="text" class="form-control" id="assetName" required />
             </div>
 
             <div class="col-md-6">
@@ -122,6 +123,7 @@
                 <option value="">Choose...</option>
                 <option value="realEstate">Real Estate</option>
                 <option value="vehicle">Vehicle</option>
+                <option value="vehicle">Other</option>
               </select>
             </div>
 
@@ -129,56 +131,55 @@
             <div class="asset-fields real-estate-fields d-none">
               <div class="col-md-6">
                 <label for="purchasePrice" class="form-label">Purchase Price</label>
-                <input type="number" class="form-control" id="purchasePrice" step="0.01">
+                <input type="number" class="form-control" id="purchasePrice" step="0.01" />
               </div>
               <div class="col-md-6">
                 <label for="purchaseDate" class="form-label">Purchase Date</label>
-                <input type="date" class="form-control" id="purchaseDate">
+                <input type="date" class="form-control" id="purchaseDate" />
               </div>
               <div class="col-md-6">
                 <label for="propertyValue" class="form-label">Current Market Value</label>
-                <input type="number" class="form-control" id="propertyValue" step="0.01">
+                <input type="number" class="form-control" id="propertyValue" step="0.01" />
               </div>
               <div class="col-md-6">
                 <label for="loanAmount" class="form-label">Loan Amount</label>
-                <input type="number" class="form-control" id="loanAmount" step="0.01">
+                <input type="number" class="form-control" id="loanAmount" step="0.01" />
               </div>
               <div class="col-md-6">
                 <label for="interestRate" class="form-label">Interest Rate (%)</label>
-                <input type="number" class="form-control" id="interestRate" step="0.01">
+                <input type="number" class="form-control" id="interestRate" step="0.01" />
               </div>
               <div class="col-md-6">
                 <label for="termYears" class="form-label">Loan Term (Years)</label>
-                <input type="number" class="form-control" id="termYears" step="0.01">
+                <input type="number" class="form-control" id="termYears" step="0.01" />
               </div>
-              <div class="col-md-6 asset-due-date d-none">
-                <label for="assetNextPaymentDate" class="form-label">Next Due Date</label>
-                <input type="date" class="form-control" id="assetNextPaymentDate" />
+              <div class="col-md-6">
+                <label for="realEstateNextDueDate" class="form-label">Next Due Date</label>
+                <input type="date" class="form-control" id="realEstateNextDueDate" />
               </div>
-
             </div>
 
             <!-- Vehicle Fields -->
             <div class="asset-fields vehicle-fields d-none">
               <div class="col-md-6">
                 <label for="vehicleValue" class="form-label">Current Vehicle Value</label>
-                <input type="number" class="form-control" id="vehicleValue">
+                <input type="number" class="form-control" id="vehicleValue" />
               </div>
               <div class="col-md-6">
                 <label for="vehicleLoanBalance" class="form-label">Loan Balance</label>
-                <input type="number" class="form-control" id="vehicleLoanBalance">
+                <input type="number" class="form-control" id="vehicleLoanBalance" />
               </div>
               <div class="col-md-6">
                 <label for="vehicleLoanStartDate" class="form-label">Loan Start Date</label>
-                <input type="date" class="form-control" id="vehicleLoanStartDate">
+                <input type="date" class="form-control" id="vehicleLoanStartDate" />
               </div>
               <div class="col-md-6">
                 <label for="vehicleInterestRate" class="form-label">Interest Rate (%)</label>
-                <input type="number" class="form-control" id="vehicleInterestRate">
+                <input type="number" class="form-control" id="vehicleInterestRate"  step="0.01" />
               </div>
-              <div class="col-md-6 asset-due-date d-none">
-                <label for="assetNextPaymentDate" class="form-label">Next Due Date</label>
-                <input type="date" class="form-control" id="assetNextPaymentDate" />
+              <div class="col-md-6">
+                <label for="vehicleNextDueDate" class="form-label">Next Due Date</label>
+                <input type="date" class="form-control" id="vehicleNextDueDate" />
               </div>
             </div>
           </div>
@@ -191,7 +192,7 @@
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- Bootstrap & JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     document.getElementById("assetType").addEventListener("change", function () {
@@ -206,5 +207,24 @@
   </script>
   <script src="assets/js/app.js"></script>
 </body>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="confirmDeleteLabel">Confirm Delete</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete <strong id="deleteAssetName">this asset</strong>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 </html>

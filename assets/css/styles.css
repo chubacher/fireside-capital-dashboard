@@ -6,3 +6,15 @@ body {
 h1, h3 {
   color: #212529;
 }
+
+#upcomingPaymentsList .border-bottom {
+  border-color: #e9ecef !important;
+}
+
+#upcomingPaymentsList strong {
+  font-size: 1rem;
+}
+
+#upcomingPaymentsList small {
+  font-size: 0.75rem;
+}
