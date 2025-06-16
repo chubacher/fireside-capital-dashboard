@@ -1,6 +1,8 @@
+/* Light Mode Defaults */
 body {
-  background-color: #f2f4f8;
+  background-color: #f8f9fc;
   font-family: "Segoe UI", sans-serif;
+  margin: 0;
 }
 
 h1, h3 {
@@ -17,4 +19,299 @@ h1, h3 {
 
 #upcomingPaymentsList small {
   font-size: 0.75rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 0.75rem;
+  border: 1px solid #e3e6f0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar {
+  height: 100vh;
+  background-color: #007bff;
+  color: white;
+  padding-top: 1rem;
+  position: fixed;
+  width: 240px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background-color: #0069d9;
+  border-left: 4px solid white;
+}
+
+.main-content {
+  margin-left: 240px;
+  background-color: #f1f3f6;
+  min-height: 100vh;
+}
+
+.stat-box {
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%; /* fills parent */
+  min-height: 250px; /* controls chart height */
+}
+
+.chart-wrapper canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+
+@media (max-width: 768px) {
+  .d-flex.align-items-stretch {
+    flex-direction: column;
+  }
+}
+
+.dashboard-card {
+  background: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  padding: 1.25rem;
+  position: relative;
+  border: 1px solid #e3e6f0;
+  min-width: 220px;
+  flex: 1;
+}
+
+.dashboard-card::before {
+  content: "";
+  display: block;
+  height: 5px;
+  width: 100%;
+  border-radius: 0.75rem 0.75rem 0 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.card-investments::before { background-color: #4e73df; }
+.card-debts::before { background-color: #e74a3b; }
+.card-assets::before { background-color: #36b9cc; }
+.card-liabilities::before { background-color: #f6c23e; }
+.card-networth::before { background-color: #1cc88a; }
+
+.dashboard-card h5 { margin: 0; font-size: 1rem; color: #4e4e4e; }
+.dashboard-card p { font-size: 1.5rem; font-weight: 600; margin: 0.25rem 0 0; color: #1a1a1a; }
+
+/* === Dark Mode Styles === */
+body[data-theme='dark'] {
+  background-color: #121212;
+  color: #eaeaea;
+}
+
+body[data-theme='dark'] .sidebar {
+  background-color: #1f1f1f;
+}
+
+body[data-theme='dark'] .card,
+body[data-theme='dark'] .dashboard-card {
+  background-color: #1e1e1e;
+  color: #eaeaea;
+  border-color: #333;
+}
+
+body[data-theme='dark'] .table th {
+  background-color: #2a2a2a;
+}
+
+body[data-theme='dark'] .sidebar a {
+  color: #eaeaea;
+}
+
+body[data-theme='dark'] .sidebar a.active,
+body[data-theme='dark'] .sidebar a:hover {
+  background-color: #333;
+  border-left-color: #fff;
+}
+body[data-theme='dark'] .main-content {
+  background-color: #181a1b; /* match body for full contrast */
+}
+
+body[data-theme='dark'] .dashboard-card h5,
+body[data-theme='dark'] .dashboard-card p,
+body[data-theme='dark'] h2,
+body[data-theme='dark'] h5,
+body[data-theme='dark'] small,
+body[data-theme='dark'] strong {
+  color: #eaeaea;
+}
+:root {
+  --chart-text-color: #000;
+}
+
+body[data-theme='dark'] {
+  --chart-text-color: #eaeaea;
+}
+
+
+/* Fix muted and small text visibility in dark mode */
+body[data-theme='dark'] {
+  --bs-body-color: #e0e0e0;
+  --bs-secondary-color: #cccccc;
+}
+
+body[data-theme='dark'] .text-muted,
+body[data-theme='dark'] small,
+body[data-theme='dark'] .text-muted small {
+  color: var(--bs-secondary-color) !important;
+}
+
+.theme-toggle {
+  padding: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.theme-toggle .form-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+
+body[data-theme='dark'] .form-check-label {
+  color: #eaeaea;
+}
+
+/* DARK MODE TABLE OVERRIDES */
+body[data-theme='dark'] table.table {
+  background-color: #1e1e1e;
+  color: #eaeaea;
+  border-color: #333;
+}
+
+body[data-theme='dark'] .table th {
+  background-color: #2a2a2a;
+  color: #ffffff;
+  border-color: #444;
+}
+
+body[data-theme='dark'] .table td {
+  background-color: #1e1e1e;
+  color: #eaeaea;
+  border-color: #444;
+}
+
+body[data-theme='dark'] .table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #2b2b2b;
+}
+/* Enhance tables to match card styling in dark mode */
+body[data-theme='dark'] table.table {
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+body[data-theme='dark'] .table th,
+body[data-theme='dark'] .table td {
+  border: 1px solid #444; /* subtle gridlines */
+}
+
+body[data-theme='dark'] .table thead th {
+  border-bottom: 2px solid #555;
+}
+
+/* Optional: enhance tables in light mode too */
+table.table {
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.table th,
+.table td {
+  border: 1px solid #e3e6f0;
+}
+
+.table thead th {
+  border-bottom: 2px solid #dee2e6;
+}
+
+/* Modal appearance in dark mode */
+body[data-theme='dark'] .modal-content {
+  background-color: #1f1f1f;
+  color: #eaeaea;
+  border: none;
+  border-radius: 0.75rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.6);
+}
+
+body[data-theme='dark'] .modal-header,
+body[data-theme='dark'] .modal-body,
+body[data-theme='dark'] .modal-footer {
+  background-color: #1f1f1f;
+  border-color: #333;
+}
+
+body[data-theme='dark'] .modal-title {
+  color: #fff;
+}
+
+/* Inputs and selects */
+body[data-theme='dark'] .form-control,
+body[data-theme='dark'] .form-select {
+  background-color: #2c2c2c;
+  color: #eaeaea;
+  border: 1px solid #555;
+}
+
+body[data-theme='dark'] .form-control::placeholder,
+body[data-theme='dark'] .form-select option {
+  color: #aaa;
+}
+.modal {
+  background: none !important;
+}
+/* Fix modal alignment in dark mode */
+body[data-theme='dark'] .modal-dialog {
+  margin: 1.75rem auto;
+  max-width: 600px;
+}
+
+body[data-theme='dark'] .modal-content {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 1.25rem;
+  background-color: #1f1f1f;
+  color: #eaeaea;
+  border-radius: 0.75rem;
+  border: 1px solid #333;
+}
+
+/* Ensure inner sections don't break layout */
+body[data-theme='dark'] .modal-header,
+body[data-theme='dark'] .modal-body,
+body[data-theme='dark'] .modal-footer {
+  padding: 1rem 1.25rem;
 }

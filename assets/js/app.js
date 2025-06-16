@@ -8,6 +8,8 @@ let editDebtIndex = null;
 let deleteDebtIndex = null;
 let editBillIndex = null;
 let deleteBillIndex = null;
+let editIncomeIndex = null;
+let deleteIncomeIndex = null;
 
 // —————— UTILS ——————
 function formatCurrency(val) {
@@ -21,6 +23,14 @@ function formatDate(iso) {
   if (!iso) return '-';
   const [year, month, day] = iso.split('-');
   return `${month}-${day}-${year}`;
+}
+
+function dedupeSnapshotsByDate(snapshots) {
+  const map = new Map();
+  snapshots.forEach(snap => {
+    map.set(snap.date, snap); // if duplicate date, newer one wins
+  });
+  return Array.from(map.values()).sort((a, b) => new Date(a.date) - new Date(b.date));
 }
 
 // —————— SNAPSHOT & DASHBOARD ——————
@@ -40,7 +50,9 @@ function saveSnapshot() {
       if (el) el.textContent = formatCurrency(val);
     });
 
-  const snaps = JSON.parse(localStorage.getItem('snapshots') || '[]');
+    const snaps = JSON.parse(localStorage.getItem('snapshots') || '[]');
+    snaps.push({ date: new Date().toISOString().split('T')[0], netWorth: 247278.34 });
+    localStorage.setItem('snapshots', JSON.stringify(snaps));
   const today = new Date().toISOString().slice(0, 10);
   if (!snaps.find(s => s.date === today)) {
     snaps.push({ date: today, netWorth: net });
@@ -49,11 +61,21 @@ function saveSnapshot() {
 }
 
 // —————— NET WORTH CHART ——————
+let netWorthChart;
+let cashFlowChart;
+
 function renderNetWorthChart() {
   const ctx = document.getElementById('netWorthTimelineChart');
   if (!ctx) return;
-  const snaps = JSON.parse(localStorage.getItem('snapshots') || '[]');
-  new Chart(ctx, {
+
+  if (netWorthChart) netWorthChart.destroy(); // Clean up before re-render
+
+  let snaps = JSON.parse(localStorage.getItem('snapshots') || '[]');
+  snaps = dedupeSnapshotsByDate(snaps);
+
+  const theme = getThemeColors();
+
+  netWorthChart = new Chart(ctx, {
     type: 'line',
     data: {
       labels: snaps.map(s => s.date),
@@ -61,7 +83,7 @@ function renderNetWorthChart() {
         label: 'Net Worth',
         data: snaps.map(s => getRaw(s.netWorth)),
         borderColor: '#007bff',
-        backgroundColor: 'rgba(0,123,255,0.1)',
+        backgroundColor: theme.fill,
         tension: 0.3,
         fill: true
       }]
@@ -69,11 +91,29 @@ function renderNetWorthChart() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      scales: { y: { ticks: { callback: v => formatCurrency(v) } } },
-      plugins: { legend: { display: false } }
+      scales: {
+        x: {
+          ticks: { color: theme.text },
+          grid: { color: theme.grid }
+        },
+        y: {
+          beginAtZero: true,
+          suggestedMax: undefined, // ensure Chart.js doesn't set a stale max
+          ticks: {
+            color: theme.text,
+            callback: v => formatCurrency(v)
+          },
+          grid: { color: theme.grid }
+        }
+      },
+      plugins: {
+        legend: { display: false }
+      }
     }
   });
 }
+
+
 
 // —————— ASSETS ——————
 function loadAssets() {
@@ -452,6 +492,300 @@ document.getElementById('billForm')?.addEventListener('submit', function (e) {
   f.getElementById('billForm').reset();
 });
 
+// —————— INCOME ——————
+function loadIncome() {
+  const data = JSON.parse(localStorage.getItem('income') || '[]');
+  window.income = data;
+}
+
+function renderIncome() {
+  const tbody = document.getElementById('incomeTableBody');
+  if (!tbody || !window.income) return;
+  tbody.innerHTML = '';
+  window.income.forEach((i, index) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${i.name}</td>
+      <td>${i.type}</td>
+      <td>${formatCurrency(i.amount)}</td>
+      <td>${i.frequency}</td>
+      <td>${i.nextDueDate ? formatDate(i.nextDueDate) : '-'}</td>
+      <td>
+        <button class="btn btn-sm btn-outline-primary me-1" onclick="editIncome(${index})"><i class="bi bi-pencil"></i></button>
+        <button class="btn btn-sm btn-outline-danger" onclick="confirmDeleteIncome(${index})"><i class="bi bi-trash"></i></button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function editIncome(index) {
+  const i = window.income[index];
+  if (!i) return;
+  editIncomeIndex = index;
+  const f = document;
+  f.getElementById('incomeName').value = i.name;
+  f.getElementById('incomeType').value = i.type;
+  f.getElementById('incomeAmount').value = i.amount;
+  f.getElementById('incomeFrequency').value = i.frequency;
+  f.getElementById('incomeNextDueDate').value = i.nextDueDate || '';
+  new bootstrap.Modal(document.getElementById('addIncomeModal')).show();
+}
+
+function confirmDeleteIncome(index) {
+  deleteIncomeIndex = index;
+  const item = window.income[index];
+  document.getElementById('deleteIncomeName').textContent = `${item.name}`;
+  new bootstrap.Modal(document.getElementById('confirmDeleteIncomeModal')).show();
+}
+
+function deleteIncomeConfirmed() {
+  if (deleteIncomeIndex !== null) {
+    window.income.splice(deleteIncomeIndex, 1);
+    localStorage.setItem('income', JSON.stringify(window.income));
+    renderIncome();
+    deleteIncomeIndex = null;
+    bootstrap.Modal.getInstance(document.getElementById('confirmDeleteIncomeModal')).hide();
+  }
+}
+
+document.getElementById('incomeForm')?.addEventListener('submit', function (e) {
+  e.preventDefault();
+  const f = document;
+  const income = {
+    name: f.getElementById('incomeName').value,
+    type: f.getElementById('incomeType').value,
+    amount: getRaw(f.getElementById('incomeAmount').value),
+    frequency: f.getElementById('incomeFrequency').value,
+    nextDueDate: f.getElementById('incomeNextDueDate').value
+  };
+
+  if (editIncomeIndex !== null) {
+    window.income[editIncomeIndex] = income;
+    editIncomeIndex = null;
+  } else {
+    window.income.push(income);
+  }
+
+  localStorage.setItem('income', JSON.stringify(window.income));
+  renderIncome();
+  bootstrap.Modal.getInstance(document.getElementById('addIncomeModal')).hide();
+  f.getElementById('incomeForm').reset();
+});
+
+// —————— MONTHLY CASHFLOW ——————
+      // —————— INCOME PROJECTION ——————
+function getIncomeProjections(income, monthsAhead = 12) {
+  const projections = [];
+  const today = new Date();
+  const endDate = new Date();
+  endDate.setMonth(today.getMonth() + monthsAhead);
+
+  let next = new Date(income.nextDueDate);
+  if (isNaN(next)) return projections;
+
+  while (next <= endDate) {
+    if (next >= today) {
+      projections.push({
+        date: next.toISOString().split('T')[0],
+        name: income.name,
+        amount: getRaw(income.amount)
+      });
+    }
+
+    switch (income.frequency) {
+      case 'Bi-Weekly':
+        next.setDate(next.getDate() + 14);
+        break;
+      case 'Monthly':
+        next.setMonth(next.getMonth() + 1);
+        break;
+      case 'Annually':
+        next.setFullYear(next.getFullYear() + 1);
+        break;
+      default:
+        break;
+    }
+  }
+
+  return projections;
+}
+      // —————— MONTHLY CASH FLOW ——————
+      function getThemeColors() {
+        const isDark = document.body.getAttribute('data-theme') === 'dark';
+        return {
+          text: isDark ? '#f1f1f1' : '#000000',
+          grid: isDark ? '#666666' : '#d0d0d0', // << this was too dark before
+          fill: isDark ? 'rgba(0,123,255,0.15)' : 'rgba(0,123,255,0.05)'
+        };
+      }
+      
+
+      function generateMonthlyCashFlowChart() {
+        const ctx = document.getElementById('cashFlowChart')?.getContext('2d');
+        if (!ctx) return;
+      
+        const income = JSON.parse(localStorage.getItem('income') || '[]');
+        const bills = JSON.parse(localStorage.getItem('bills') || '[]');
+        const debts = JSON.parse(localStorage.getItem('debts') || '[]');
+        const investments = JSON.parse(localStorage.getItem('investments') || '[]');
+      
+        const today = new Date();
+        const months = [];
+        const incomeTotals = [];
+        const expenseTotals = [];
+      
+        // Loop through next 6 months
+        for (let i = 0; i < 6; i++) {
+          const month = new Date(today.getFullYear(), today.getMonth() + i, 1);
+          const monthStart = new Date(month);
+          const monthEnd = new Date(month.getFullYear(), month.getMonth() + 1, 0);
+      
+          months.push(month.toLocaleString('default', { month: 'long' }));
+      
+          let incomeSum = 0;
+          let expenseSum = 0;
+      
+          income.forEach((item) => {
+            const pay = parseFloat(item.amount);
+            let nextDate = new Date(item.nextDueDate || item.nextPaymentDate || item.due || today);
+            const frequency = (item.frequency || '').toLowerCase();
+
+      
+            while (nextDate <= monthEnd) {
+              if (nextDate >= monthStart && nextDate <= monthEnd) {
+                incomeSum += pay;
+              }
+              nextDate = getNextDate(nextDate, item.frequency);
+            }
+          });
+      
+          bills.forEach((item) => {
+            const cost = parseFloat(item.amount);
+            let nextDate = new Date(item.nextDueDate || today);
+      
+            while (nextDate <= monthEnd) {
+              if (nextDate >= monthStart && nextDate <= monthEnd) {
+                expenseSum += cost;
+              }
+              nextDate = getNextDate(nextDate, item.frequency);
+            }
+          });
+
+          debts.forEach((item) => {
+            const cost = parseFloat(item.monthlyPayment || 0);
+            let nextDate = new Date(item.nextDueDate || today);
+            const frequency = 'monthly'; // Assume monthly by default for debts
+          
+            while (nextDate <= monthEnd) {
+              if (nextDate >= monthStart && nextDate <= monthEnd) {
+                expenseSum += cost;
+              }
+              nextDate = getNextDate(nextDate, frequency);
+            }
+          });
+          investments.forEach((item) => {
+            const contrib = parseFloat(item.monthlyContribution || 0);
+            let nextDate = new Date(item.nextContributionDate || today);
+            const frequency = 'monthly'; // Assume monthly contributions
+          
+            while (nextDate <= monthEnd) {
+              if (nextDate >= monthStart && nextDate <= monthEnd) {
+                expenseSum += contrib;
+              }
+              nextDate = getNextDate(nextDate, frequency);
+            }
+          });          
+      
+          incomeTotals.push(incomeSum);
+          expenseTotals.push(expenseSum);
+        }
+      
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: months,
+            datasets: [
+              {
+                label: 'Income',
+                data: incomeTotals,
+                backgroundColor: '#4e73df'
+              },
+              {
+                label: 'Expenses',
+                data: expenseTotals,
+                backgroundColor: '#e74a3b'
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'bottom', // or 'top'
+                labels: {
+                  color: getComputedStyle(document.body).getPropertyValue('--chart-text-color') || '#000',
+                  font: {
+                    size: 14 // increase legend text size
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                ticks: {
+                  color: getComputedStyle(document.body).getPropertyValue('--chart-text-color') || '#000',
+                  font: {
+                    size: 14 // increase X-axis label size
+                  }
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: 'Amount ($)',
+                  color: getComputedStyle(document.body).getPropertyValue('--chart-text-color') || '#000',
+                  font: {
+                    size: 14
+                  }
+                },
+                ticks: {
+                  color: getComputedStyle(document.body).getPropertyValue('--chart-text-color') || '#000',
+                  font: {
+                    size: 14 // increase Y-axis label size
+                  },
+                  callback: v => formatCurrency(v)
+                }
+              }
+            }
+          }
+        });
+      } 
+      
+      
+      function getNextDate(date, frequency) {
+        const next = new Date(date);
+        switch ((frequency || '').toLowerCase()) {
+          case 'monthly':
+            next.setMonth(next.getMonth() + 1);
+            break;
+          case 'bi-weekly':
+          case 'biweekly':
+            next.setDate(next.getDate() + 14);
+            break;
+          case 'quarterly':
+            next.setMonth(next.getMonth() + 3);
+            break;
+          case 'annually':
+            next.setFullYear(next.getFullYear() + 1);
+            break;
+          default:
+            next.setMonth(next.getMonth() + 1); // fallback
+        }
+        return next;
+      }
+      
+
 // —————— UPCOMING PAYMENTS ——————
 function renderUpcomingPayments() {
   const container = document.getElementById('upcomingPaymentsList');
@@ -463,6 +797,8 @@ function renderUpcomingPayments() {
 
   const debts = JSON.parse(localStorage.getItem('debts') || '[]');
   const bills = JSON.parse(localStorage.getItem('bills') || '[]');
+  const income = JSON.parse(localStorage.getItem('income') || '[]');
+  
 
   const all = [...debts.map(d => ({
     name: d.name,
@@ -476,6 +812,12 @@ function renderUpcomingPayments() {
     amount: b.amount,
     due: b.nextDueDate,
     category: 'Bill'
+  })), ...income.map(b => ({
+    name: b.name,
+    type: b.type,
+    amount: b.amount,
+    due: b.nextDueDate,
+    category: 'Income'
   }))];
 
   const upcoming = all.filter(item => {
@@ -506,7 +848,27 @@ function renderUpcomingPayments() {
     </div>
   `).join('');
 }
+ // -----Toggle Dark Mode -----
+ const themeSwitch = document.getElementById('themeSwitch');
+const themeLabel = document.querySelector('label[for="themeSwitch"]');
 
+themeSwitch?.addEventListener('change', function () {
+  const isDark = this.checked;
+  document.body.setAttribute('data-theme', isDark ? 'dark' : '');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  if (themeLabel) themeLabel.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+});
+
+
+// Load from localStorage on page load
+window.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('theme');
+  const toggle = document.getElementById('themeSwitch');
+  if (savedTheme === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+    if (toggle) toggle.checked = true;
+  }
+});
 // —————— INIT ——————
 window.addEventListener('DOMContentLoaded', function () {
   loadAssets();
@@ -514,13 +876,18 @@ window.addEventListener('DOMContentLoaded', function () {
   renderAssets();
   renderInvestments();
   saveSnapshot();
-  renderNetWorthChart();
   loadDebts();
   renderDebts();
   loadBills();
   renderBills();
   renderUpcomingPayments();
+  loadIncome();
+  renderIncome();
+  renderNetWorthChart();
+  generateMonthlyCashFlowChart();  
+
   
+
   const assetTypeEl = document.getElementById('assetType');
   if (assetTypeEl) {
     assetTypeEl.addEventListener('change', function (e) {
@@ -531,3 +898,10 @@ window.addEventListener('DOMContentLoaded', function () {
     });
   }
 });
+
+document.getElementById('themeToggle').addEventListener('change', () => {
+  document.body.setAttribute('data-theme', themeToggle.checked ? 'dark' : 'light');
+  renderNetWorthChart();
+  generateMonthlyCashFlowChart();
+});
+
