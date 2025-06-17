@@ -1,0 +1,19 @@
+{
+  "name": "fireside-capital-dashboard",
+  "version": "1.0.0",
+  "description": "The Fireside Capital Dashboard is a modern personal finance tracking tool built with HTML, JavaScript, and Bootstrap. It allows users to track their assets, investments, debts, and calculate real-time net worth with snapshot history and visual reporting.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.50.0",
+    "axios": "^1.10.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0"
+  }
+}

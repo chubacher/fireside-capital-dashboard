@@ -11,6 +11,7 @@ let deleteBillIndex = null;
 let editIncomeIndex = null;
 let deleteIncomeIndex = null;
 
+
 // —————— UTILS ——————
 function formatCurrency(val) {
   const n = typeof val === 'number' ? val : Number(String(val).replace(/[^0-9.-]+/g, '')) || 0;
@@ -33,7 +34,45 @@ function dedupeSnapshotsByDate(snapshots) {
   return Array.from(map.values()).sort((a, b) => new Date(a.date) - new Date(b.date));
 }
 
+// Initialize Supabase
+const supabaseUrl = 'https://bgsdnlkhwgbdbdvmhrzv.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJnc2RubGtod2diZGJkdm1ocnp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxNjM0MjQsImV4cCI6MjA2NTczOTQyNH0.fCUUUrwn5Gy6J7KIMty3grq2a8GtNIHSqLLue3Q_nVM'; // Replace this with your actual key
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+// Function to push local data to Supabase
+async function pushLocalDataToSupabase() {
+  const tables = ['assets', 'bills', 'debts', 'investments', 'snapshots'];
+
+  for (const table of tables) {
+    const localData = JSON.parse(localStorage.getItem(table) || '[]');
+
+    if (localData.length > 0) {
+      const { error } = await supabase.from(table).upsert(localData, { onConflict: 'id' });
+      if (error) {
+        console.error(`Error uploading ${table}:`, error.message);
+      } else {
+        console.log(`✅ Uploaded ${localData.length} rows to ${table}`);
+      }
+    }
+  }
+}
 // —————— SNAPSHOT & DASHBOARD ——————
+const historical = [
+  { date: '2025-06-16', netWorth: 247278 }
+];
+
+let snaps = JSON.parse(localStorage.getItem('snapshots') || '[]');
+
+// Add missing ones
+historical.forEach(entry => {
+  if (!snaps.some(s => s.date === entry.date)) {
+    snaps.push(entry);
+  }
+});
+
+localStorage.setItem('snapshots', JSON.stringify(snaps));
+
+
 function saveSnapshot() {
   const invs = JSON.parse(localStorage.getItem('investments') || '[]');
   const debts = JSON.parse(localStorage.getItem('debts') || '[]');
@@ -41,7 +80,7 @@ function saveSnapshot() {
 
   const totalInv = invs.reduce((sum, i) => sum + getRaw(i.value), 0);
   const totalDebt = debts.reduce((sum, d) => sum + getRaw(d.amount), 0);
-  const totalAssetEquity = assets.reduce((sum, a) => sum + Math.max(getRaw(a.value) - getRaw(a.loan), 0), 0);
+  const totalAssetEquity = assets.reduce((sum, a) => Math.max(sum + getRaw(a.value) - getRaw(a.loan), 0), 0);
   const net = totalInv + totalAssetEquity - totalDebt;
 
   [['totalInvestments', totalInv], ['totalDebts', totalDebt], ['totalAssets', totalAssetEquity], ['netWorth', net]]
@@ -50,15 +89,16 @@ function saveSnapshot() {
       if (el) el.textContent = formatCurrency(val);
     });
 
-    const snaps = JSON.parse(localStorage.getItem('snapshots') || '[]');
-    snaps.push({ date: new Date().toISOString().split('T')[0], netWorth: 247278.34 });
-    localStorage.setItem('snapshots', JSON.stringify(snaps));
-  const today = new Date().toISOString().slice(0, 10);
-  if (!snaps.find(s => s.date === today)) {
+  const today = new Date().toISOString().split('T')[0];
+  let snaps = JSON.parse(localStorage.getItem('snapshots') || '[]');
+
+  // Only add new snapshot if one doesn't already exist for today
+  if (!snaps.some(s => s.date === today)) {np
     snaps.push({ date: today, netWorth: net });
     localStorage.setItem('snapshots', JSON.stringify(snaps));
   }
 }
+
 
 // —————— NET WORTH CHART ——————
 let netWorthChart;
@@ -92,22 +132,30 @@ function renderNetWorthChart() {
       responsive: true,
       maintainAspectRatio: false,
       scales: {
-        x: {
-          ticks: { color: theme.text },
-          grid: { color: theme.grid }
-        },
         y: {
           beginAtZero: true,
-          suggestedMax: undefined, // ensure Chart.js doesn't set a stale max
+          suggestedMax: null, // Remove hard cap
           ticks: {
-            color: theme.text,
-            callback: v => formatCurrency(v)
+            callback: v => formatCurrency(v),
+            color: theme.text || '#ccc'
           },
-          grid: { color: theme.grid }
+          grid: {
+            color: theme.grid || '#444'
+          }
+        },
+        x: {
+          ticks: {
+            color: theme.text || '#ccc'
+          },
+          grid: {
+            color: theme.grid || '#444'
+          }
         }
       },
       plugins: {
-        legend: { display: false }
+        legend: {
+          display: false
+        }
       }
     }
   });

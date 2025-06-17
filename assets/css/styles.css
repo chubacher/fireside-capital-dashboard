@@ -315,3 +315,8 @@ body[data-theme='dark'] .modal-body,
 body[data-theme='dark'] .modal-footer {
   padding: 1rem 1.25rem;
 }
+
+.card-allocated::before { background-color: #f6c23e; }   /* Yellow */
+.card-netincome::before { background-color: #36b9cc; }   /* Teal */
+.card-remaining::before { background-color: #1cc88a; }   /* Green */
+
