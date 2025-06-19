@@ -1,13 +1,12 @@
-
 import { renderNetWorthChart, generateMonthlyCashFlowChart } from './charts.js';
 import {
   loadAssets, renderAssets, openAssetModal, deleteAsset,
-  loadInvestments, renderInvestments, editInvestment, confirmDeleteInvestment, deleteInvestment,
-  loadDebts, renderDebts, editDebt, confirmDeleteDebt, deleteDebt,
-  loadBills, renderBills, editBill, confirmDeleteBill, deleteBillConfirmed,
-  loadIncome, renderIncome, editIncome, confirmDeleteIncome, deleteIncomeConfirmed
+  loadInvestments, renderInvestments, editInvestment, confirmDeleteInvestment,
+  loadDebts, renderDebts, editDebt, confirmDeleteDebt, 
+  loadBills, renderBills, editBill, confirmDeleteBill,
+  loadIncome, renderIncome, editIncome, confirmDeleteIncome,
 } from './transactions.js';
-import { formatCurrency, getRaw, formatDate, dedupeSnapshotsByDate } from './utility.js';
+import { formatCurrency, getRaw, formatDate } from './utility.js';
 import { initializePlaid, openPlaidLink } from './plaid.js';
 import { signUp, login, logout } from './authentication.js';
 
@@ -136,12 +135,19 @@ function setupThemeToggle() {
 }
 
 // Main initialization
+
 function init() {
   loadAssets();
+  console.log('Assets loaded:', window.assets);
   loadInvestments();
+  console.log('Investments loaded:', window.investments);
   loadDebts();
+  console.log('Debts loaded:', window.debts);
   loadBills();
+  console.log('Bills loaded:', window.bills);
   loadIncome();
+  console.log('Income loaded:', window.income);
+
   renderAssets();
   renderInvestments();
   renderDebts();
@@ -153,11 +159,7 @@ function init() {
   generateMonthlyCashFlowChart();
   setupThemeToggle();
   initializePlaid();
-
-  const assetTypeEl = document.getElementById('assetType');
- 
 }
-
 // Event Listeners
 document.getElementById('connectBankBtn')?.addEventListener('click', openPlaidLink);
 
@@ -167,8 +169,10 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
   const password = document.getElementById('loginPassword').value;
   try {
     const user = await login(email, password);
+    console.log('Login successful:', user); // Add this line
     // Handle successful login (e.g., hide login modal, show user info)
   } catch (error) {
+    console.error('Login error:', error); // Add this line
     // Handle login error (e.g., show error message)
   }
 });
@@ -181,8 +185,10 @@ document.getElementById('signupForm')?.addEventListener('submit', async (e) => {
   const lastName = document.getElementById('signupLastName').value;
   try {
     const user = await signUp(email, password, firstName, lastName);
+    console.log('Signup successful:', user); // Add this line
     // Handle successful signup (e.g., hide signup modal, show success message)
   } catch (error) {
+    console.error('Signup error:', error); // Add this line
     // Handle signup error (e.g., show error message)
   }
 });
@@ -209,3 +215,4 @@ window.editBill = editBill;
 window.confirmDeleteBill = confirmDeleteBill;
 window.editIncome = editIncome;
 window.confirmDeleteIncome = confirmDeleteIncome;
+window.openPlaidLink = openPlaidLink; // Add this line

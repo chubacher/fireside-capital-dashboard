@@ -468,7 +468,7 @@ function loadBills() {
   export {
     loadAssets, renderAssets,openAssetModal,deleteAsset,
     loadInvestments, renderInvestments,editInvestment, confirmDeleteInvestment, deleteInvestment,
-    loadDebts, renderDebts,editDebtBill, confirmDeleteBill, deleteBill,
-    loadBills, renderBills, editBill, confirmDeleteBill, deleteBillConfirmed,
-    loadIncome, renderIncome, renderAssets, editIncome, confirmDeleteIncome, deleteIncomeConfirmed
+    loadDebts, renderDebts, editDebt,confirmDeleteDebt,
+    loadBills, renderBills, confirmDeleteBill, deleteBillConfirmed,editBill,
+    loadIncome, renderIncome, editIncome, confirmDeleteIncome, deleteIncomeConfirmed
 }

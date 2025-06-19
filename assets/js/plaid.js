@@ -3,19 +3,24 @@ let plaidLinkHandler;
 
 // Initialize Plaid
 function initializePlaid() {
-  const plaidScript = document.createElement('script');
-  plaidScript.src = 'https://cdn.plaid.com/link/v2/stable/link-initialize.js';
-  document.head.appendChild(plaidScript);
-
-  plaidScript.onload = () => {
-    createPlaidLinkHandler();
-  };
+  fetch('/create_link_token')
+    .then(response => response.json())
+    .then(data => {
+      if (data.link_token) {
+        createPlaidLinkHandler(data.link_token);
+      } else {
+        console.error('Failed to fetch link token');
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching link token:', error);
+    });
 }
 
 // Create Plaid Link handler
 function createPlaidLinkHandler() {
   plaidLinkHandler = Plaid.create({
-    token: 'YOUR_LINK_TOKEN', // You'll need to generate this on your server
+    token: 'YOUR_LINK_TOKEN', // Replace with your generated link token
     onSuccess: (public_token, metadata) => {
       // Send public_token to your server
       exchangePublicToken(public_token);
