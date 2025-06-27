@@ -4,7 +4,8 @@
   "description": "The Fireside Capital Dashboard is a modern personal finance tracking tool built with HTML, JavaScript, and Bootstrap. It allows users to track their assets, investments, debts, and calculate real-time net worth with snapshot history and visual reporting.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo Skipping build"
   },
   "keywords": [],
   "author": "",
