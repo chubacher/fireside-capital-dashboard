@@ -514,7 +514,7 @@ function renderEmergencyFundChart() {
   wrapper.innerHTML = '';
 
   const emergencyGoal = window.settings?.emergency_fund_goal || 0;
-  const emergencyFundAsset = (window.assets || []).find(a => a.name.toLowerCase().includes('emergency fund'));
+  const emergencyFundAsset = (window.investments || []).find(a => a.name.toLowerCase().includes('emergency fund'));
   const emergencyCurrent = emergencyFundAsset?.value || 0;
 
   if (emergencyGoal > 0) {
