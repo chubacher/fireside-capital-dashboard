@@ -35,10 +35,37 @@
     <!-- Main Content -->
     <main class="main-content flex-grow-1 px-4 py-4">
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Investments</h2>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addInvestmentModal">
-          <i class="bi bi-plus-circle me-1"></i> Add Investment
-        </button>
+
+        <div class="d-flex align-items-center">
+          <h2 class="mb-0">Investments</h2>
+          <button class="btn btn-primary ms-3" data-bs-toggle="modal" data-bs-target="#addInvestmentModal">
+            <i class="bi bi-plus-circle me-1"></i> Add Investment
+          </button>
+        </div>
+      
+        <div>
+          <div id="loggedOutState">
+            <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#loginModal">
+              <i class="bi bi-box-arrow-in-right"></i> Login
+            </button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#signupModal">
+              <i class="bi bi-person-plus"></i> Sign Up
+            </button>
+          </div>
+          <div id="loggedInState" class="d-none">
+            <div class="dropdown">
+              <button class="btn btn-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Welcome, <span id="username">User</span>!
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="#">Account Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#" id="logoutButton">Logout</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      
       </div>
 
       <div class="card p-4 shadow-sm">
@@ -112,7 +139,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Save Investment</button>
+            <button type="button" id="saveInvestmentBtn" class="btn btn-primary">Save Investment</button>
           </div>
         </form>
       </div>

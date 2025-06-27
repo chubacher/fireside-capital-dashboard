@@ -231,4 +231,5 @@ export function dedupeSnapshotsByDate(snapshots) {
   return uniqueSnapshots;
 }
 
+window.renderNetWorthChart = renderNetWorthChart;
   export {renderNetWorthChart, generateMonthlyCashFlowChart};

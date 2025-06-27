@@ -120,6 +120,53 @@ h1, h3 {
 .card-liabilities::before { background-color: #f6c23e; }
 .card-networth::before { background-color: #1cc88a; }
 
+/* Custom Progress Bar Colors to match Dashboard Cards */
+.progress-bar.bg-dashboard-green {
+  background-color: #1cc88a !important; /* from .card-networth */
+}
+.progress-bar.bg-dashboard-red {
+  background-color: #e74a3b !important; /* from .card-debts */
+}
+.progress-bar.bg-dashboard-yellow {
+  background-color: #f6c23e !important; /* from .card-liabilities */
+}
+
+/* Custom Text Colors to match Dashboard Cards */
+.text-dashboard-green {
+  color: #1cc88a !important; /* from .card-networth */
+}
+.text-dashboard-red {
+  color: #e74a3b !important; /* from .card-debts */
+}
+.text-dashboard-yellow {
+  color: #f6c23e !important; /* from .card-liabilities */
+}
+
+/*
+ * Dark Mode Form Input Fix
+ */
+
+/* Styles the '$' sign container */
+[data-theme="dark"] .input-group-text {
+  background-color: #2a2f34; /* A dark background */
+  border-color: #454d55;     /* A slightly lighter border */
+  color: #dee2e6;             /* Light text color for the '$' sign */
+}
+
+/* Styles the actual input box */
+[data-theme="dark"] .form-control, 
+[data-theme="dark"] .form-select {
+  background-color: #212529; /* A dark background for the input */
+  border-color: #454d55;
+  color: #f8f9fa;           /* White text for what you type */
+}
+
+/* Changes text color to be light when the input is disabled */
+[data-theme="dark"] .form-control:disabled {
+  background-color: #343a40;
+}
+
+
 .dashboard-card h5 { margin: 0; font-size: 1rem; color: #4e4e4e; }
 .dashboard-card p { font-size: 1.5rem; font-weight: 600; margin: 0.25rem 0 0; color: #1a1a1a; }
 
@@ -319,4 +366,31 @@ body[data-theme='dark'] .modal-footer {
 .card-allocated::before { background-color: #f6c23e; }   /* Yellow */
 .card-netincome::before { background-color: #36b9cc; }   /* Teal */
 .card-remaining::before { background-color: #1cc88a; }   /* Green */
+
+/*
+ * Dark Mode Dropdown Menu Fix
+ */
+
+/* Sets the background color for the dropdown menu itself */
+[data-theme="dark"] .dropdown-menu {
+  background-color: #2a2f34;
+  border-color: #454d55;
+}
+
+/* Sets the text color for the links inside the dropdown */
+[data-theme="dark"] .dropdown-item {
+  color: #dee2e6;
+}
+
+/* Sets the color and background for a link when you hover over it */
+[data-theme="dark"] .dropdown-item:hover,
+[data-theme="dark"] .dropdown-item:focus {
+  color: #ffffff;
+  background-color: #495057;
+}
+
+/* Makes the horizontal divider line visible in dark mode */
+[data-theme="dark"] .dropdown-divider {
+  border-top-color: #454d55;
+}
 

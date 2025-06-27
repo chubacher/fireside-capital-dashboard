@@ -38,12 +38,43 @@
         <main class="main-content flex-grow-1 px-4 py-4">
             <!-- Month Selector -->
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <div class="d-flex align-items-center mb-4">
-                    <button class="btn btn-outline-light btn-sm me-2" id="prevMonth"><i class="bi bi-chevron-left"></i></button>
+
+                <div class="d-flex align-items-center">
+                  <h2 class="mb-0">Budget</h2>
+                  <div class="d-flex align-items-center ms-4">
+                    <button class="btn btn-outline-primary btn-sm me-2" id="prevMonth"><i class="bi bi-chevron-left"></i></button>
                     <h4 id="currentMonth" class="mb-0">Loading...</h4>
-                    <button class="btn btn-outline-light btn-sm ms-2" id="nextMonth"><i class="bi bi-chevron-right"></i></button>
+                    <button class="btn btn-outline-primary btn-sm ms-2" id="nextMonth"><i class="bi bi-chevron-right"></i></button>
+                    <button class="btn btn-primary btn-sm ms-4" data-bs-toggle="modal" data-bs-target="#addBudgetItemModal">
+                        <i class="bi bi-plus-circle"></i> Add Item
+                      </button>
                   </div>
-            </div>
+                </div>
+              
+                <div>
+                  <div id="loggedOutState">
+                    <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#loginModal">
+                      <i class="bi bi-box-arrow-in-right"></i> Login
+                    </button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#signupModal">
+                      <i class="bi bi-person-plus"></i> Sign Up
+                    </button>
+                  </div>
+                  <div id="loggedInState" class="d-none">
+                    <div class="dropdown">
+                      <button class="btn btn-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Welcome, <span id="username">User</span>!
+                      </button>
+                      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="#">Account Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" id="logoutButton">Logout</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              
+              </div>
 
             <!-- Summary Cards -->
             <div class="row mb-4">
@@ -66,9 +97,9 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="card p-3 shadow-sm text-center">
-                        <h6 class="text-muted mb-1">Available</h6>
-                        <h4 id="availableAmount">$0.00</h4>
+                    <div class="card p-3 shadow-sm text-center text-success">
+                        <h6 class="text-muted mb-1">Remaining to Budget</h6>
+                        <h4 id="remainingToBudget">$0.00</h4>
                     </div>
                 </div>
             </div>
@@ -79,27 +110,53 @@
                     <table class="table align-middle">
                         <thead>
                             <tr>
-                                <th>Category</th>
-                                <th>Item</th>
-                                <th>Needed</th>
-                                <th>Assigned</th>
-                                <th>Available</th>
-                                <th>Actions</th>
+                              <th style="width: 15%;">Category</th>
+                              <th style="width: 25%;">Item</th>
+                              <th style="width: 15%;">Needed</th>
+                              <th style="width: 15%;">Assigned</th>
+                              <th style="width: 15%;">Remaining</th>
+                              <th style="width: 15%;">Funding Status</th>
                             </tr>
-                        </thead>
+                          </thead>
                         <tbody id="budgetAssignmentTable">
                             <!-- Populated by JS -->
                         </tbody>
                     </table>
                 </div>
             </div>
-
+            <div class="modal fade" id="addBudgetItemModal" tabindex="-1" aria-labelledby="addBudgetItemLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <form id="budgetItemForm">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="addBudgetItemLabel">Add Budget Item</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="mb-3">
+                          <label for="budgetItemName" class="form-label">Item Name (e.g., Groceries)</label>
+                          <input type="text" class="form-control" id="budgetItemName" required>
+                        </div>
+                        <div class="mb-3">
+                          <label for="budgetItemCategory" class="form-label">Category</label>
+                          <input type="text" class="form-control" id="budgetItemCategory" placeholder="e.g., Food" required>
+                        </div>
+                        <div class="mb-3">
+                          <label for="budgetItemNeeded" class="form-label">Amount Needed ($)</label>
+                          <input type="number" class="form-control" id="budgetItemNeeded" required min="0" step="0.01">
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" id="saveBudgetItemBtn" class="btn btn-primary">Add Item</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
         </main>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/app.js"></script>
-    <script src="assets/js/budget.js"></script>
-</body>
-
-</html>
+  </body>
+  </html>
